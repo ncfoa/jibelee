@@ -1,0 +1,984 @@
+openapi: 3.0.3
+info:
+  title: P2P Delivery Platform API
+  description: |
+    Comprehensive enterprise-level API for a peer-to-peer delivery platform that connects travelers with customers who need items delivered. 
+    
+    ## Features
+    - User management with verification and ratings
+    - Trip planning and management
+    - Delivery request matching system
+    - QR code-based verification for pickup and delivery
+    - Dynamic pricing and payment processing
+    - Real-time location tracking
+    - Multi-channel notification system
+    - Comprehensive admin dashboard
+    
+    ## Authentication
+    All endpoints (except public ones) require JWT Bearer token authentication:
+    ```
+    Authorization: Bearer <jwt_token>
+    ```
+    
+    Admin endpoints additionally require:
+    ```
+    X-Admin-Token: <admin_token>
+    ```
+    
+    ## Rate Limiting
+    - Standard users: 1000 requests per hour
+    - Premium users: 5000 requests per hour  
+    - Admin users: 10000 requests per hour
+    
+    ## Error Handling
+    The API uses conventional HTTP response codes and returns errors in the following format:
+    ```json
+    {
+      "success": false,
+      "message": "Error description",
+      "errors": ["Detailed error messages"],
+      "meta": {
+        "timestamp": "2025-02-01T12:00:00Z",
+        "requestId": "req_uuid"
+      }
+    }
+    ```
+  version: 1.0.0
+  contact:
+    name: P2P Delivery API Support
+    email: api-support@p2pdelivery.com
+    url: https://docs.p2pdelivery.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.p2pdelivery.com/api/v1
+    description: Production server
+  - url: https://staging-api.p2pdelivery.com/api/v1
+    description: Staging server
+  - url: http://localhost:3000/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - AdminAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for user authentication
+    AdminAuth:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: Admin authentication token
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phoneNumber:
+          type: string
+          example: "+1234567890"
+        userType:
+          type: string
+          enum: [customer, traveler, both]
+        status:
+          type: string
+          enum: [active, suspended, banned, pending]
+        verificationLevel:
+          type: string
+          enum: [unverified, email_verified, phone_verified, id_verified, fully_verified]
+        rating:
+          $ref: '#/components/schemas/Rating'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Rating:
+      type: object
+      properties:
+        average:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 5
+          example: 4.8
+        count:
+          type: integer
+          minimum: 0
+          example: 156
+
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "NYC to Boston Business Trip"
+        description:
+          type: string
+        type:
+          type: string
+          enum: [flight, train, bus, car, other]
+        status:
+          type: string
+          enum: [upcoming, active, completed, cancelled]
+        traveler:
+          $ref: '#/components/schemas/User'
+        origin:
+          $ref: '#/components/schemas/Location'
+        destination:
+          $ref: '#/components/schemas/Location'
+        departureTime:
+          type: string
+          format: date-time
+        arrivalTime:
+          type: string
+          format: date-time
+        capacity:
+          $ref: '#/components/schemas/Capacity'
+        pricing:
+          $ref: '#/components/schemas/Pricing'
+        createdAt:
+          type: string
+          format: date-time
+
+    Location:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "New York, NY, USA"
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        airport:
+          type: string
+          example: "JFK"
+        terminal:
+          type: string
+          example: "Terminal 4"
+
+    Coordinates:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          example: 40.7128
+        lng:
+          type: number
+          format: double
+          example: -74.0060
+
+    Capacity:
+      type: object
+      properties:
+        weight:
+          type: number
+          format: float
+          description: "Weight capacity in kg"
+          example: 5.0
+        volume:
+          type: number
+          format: float
+          description: "Volume capacity in liters"
+          example: 10.0
+        items:
+          type: integer
+          description: "Number of items"
+          example: 3
+
+    Pricing:
+      type: object
+      properties:
+        basePrice:
+          type: number
+          format: float
+          example: 15.00
+        pricePerKg:
+          type: number
+          format: float
+          example: 5.00
+        pricePerKm:
+          type: number
+          format: float
+          example: 0.50
+        currency:
+          type: string
+          example: "USD"
+
+    DeliveryRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: "Important Documents Delivery"
+        description:
+          type: string
+        category:
+          type: string
+          enum: [documents, electronics, clothing, food, fragile, other]
+        status:
+          type: string
+          enum: [pending, matched, accepted, picked_up, in_transit, delivered, cancelled]
+        customer:
+          $ref: '#/components/schemas/User'
+        item:
+          $ref: '#/components/schemas/Item'
+        pickup:
+          $ref: '#/components/schemas/DeliveryLocation'
+        delivery:
+          $ref: '#/components/schemas/DeliveryLocation'
+        urgency:
+          type: string
+          enum: [standard, express, urgent]
+        maxPrice:
+          type: number
+          format: float
+          example: 50.00
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    Item:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Legal Documents"
+        description:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        weight:
+          type: number
+          format: float
+        dimensions:
+          $ref: '#/components/schemas/Dimensions'
+        value:
+          type: number
+          format: float
+        fragile:
+          type: boolean
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    Dimensions:
+      type: object
+      properties:
+        length:
+          type: number
+          format: float
+          description: "Length in cm"
+        width:
+          type: number
+          format: float
+          description: "Width in cm"
+        height:
+          type: number
+          format: float
+          description: "Height in cm"
+
+    DeliveryLocation:
+      type: object
+      properties:
+        address:
+          type: string
+        coordinates:
+          $ref: '#/components/schemas/Coordinates'
+        contactPerson:
+          type: string
+        phoneNumber:
+          type: string
+        instructions:
+          type: string
+        timeWindow:
+          $ref: '#/components/schemas/TimeWindow'
+
+    TimeWindow:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+
+    QRCode:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [pickup, delivery]
+        qrCodeData:
+          type: string
+          description: "Encrypted QR code data"
+        qrCodeImage:
+          type: string
+          format: uri
+          description: "Base64 encoded QR code image"
+        downloadUrl:
+          type: string
+          format: uri
+        expiresAt:
+          type: string
+          format: date-time
+        backupCode:
+          type: string
+          example: "PICKUP-123-456-789"
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+          example: "USD"
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, refunded]
+        paymentMethod:
+          type: string
+          enum: [card, wallet, bank_transfer, crypto]
+        platformFee:
+          type: number
+          format: float
+        createdAt:
+          type: string
+          format: date-time
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [push, email, sms, in_app]
+        category:
+          type: string
+          enum: [delivery_update, new_request, payment, system, promotional]
+        title:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [sent, delivered, read, failed]
+        sentAt:
+          type: string
+          format: date-time
+        readAt:
+          type: string
+          format: date-time
+
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            version:
+              type: string
+            requestId:
+              type: string
+              format: uuid
+
+    PaginationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              minimum: 1
+            limit:
+              type: integer
+              minimum: 1
+              maximum: 100
+            total:
+              type: integer
+              minimum: 0
+            totalPages:
+              type: integer
+              minimum: 0
+            hasNext:
+              type: boolean
+            hasPrev:
+              type: boolean
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Validation error"
+        errors:
+          type: array
+          items:
+            type: string
+          example: ["Email is required", "Password must be at least 8 characters"]
+        meta:
+          type: object
+          properties:
+            timestamp:
+              type: string
+              format: date-time
+            requestId:
+              type: string
+              format: uuid
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      description: Create a new user account with email verification
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, firstName, lastName, userType]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                confirmPassword:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                phoneNumber:
+                  type: string
+                dateOfBirth:
+                  type: string
+                  format: date
+                userType:
+                  type: string
+                  enum: [customer, traveler, both]
+                acceptedTerms:
+                  type: boolean
+                acceptedPrivacy:
+                  type: boolean
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                deviceInfo:
+                  type: object
+                  properties:
+                    deviceId:
+                      type: string
+                    deviceType:
+                      type: string
+                      enum: [mobile, web, tablet]
+                    platform:
+                      type: string
+                      enum: [ios, android, web]
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                      refreshToken:
+                        type: string
+                      expiresIn:
+                        type: integer
+                      user:
+                        $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # User Management Endpoints
+  /users/me:
+    get:
+      tags: [User Management]
+      summary: Get current user profile
+      description: Retrieve the authenticated user's profile information
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  # Trip Management Endpoints  
+  /trips:
+    post:
+      tags: [Trip Management]
+      summary: Create a new trip
+      description: Create a new trip for delivery services
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, type, origin, destination, departureTime, arrivalTime, capacity]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                type:
+                  type: string
+                  enum: [flight, train, bus, car, other]
+                origin:
+                  $ref: '#/components/schemas/Location'
+                destination:
+                  $ref: '#/components/schemas/Location'
+                departureTime:
+                  type: string
+                  format: date-time
+                arrivalTime:
+                  type: string
+                  format: date-time
+                capacity:
+                  $ref: '#/components/schemas/Capacity'
+                pricing:
+                  $ref: '#/components/schemas/Pricing'
+      responses:
+        '201':
+          description: Trip created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Trip'
+
+    get:
+      tags: [Trip Management]
+      summary: Search trips
+      description: Search for available trips based on criteria
+      parameters:
+        - name: origin
+          in: query
+          schema:
+            type: string
+        - name: destination
+          in: query
+          schema:
+            type: string
+        - name: departureDate
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Trips retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginationResponse'
+
+  # Delivery Request Endpoints
+  /deliveries/requests:
+    post:
+      tags: [Delivery Requests]
+      summary: Create delivery request
+      description: Create a new delivery request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, item, pickup, delivery, urgency, maxPrice]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum: [documents, electronics, clothing, food, fragile, other]
+                item:
+                  $ref: '#/components/schemas/Item'
+                pickup:
+                  $ref: '#/components/schemas/DeliveryLocation'
+                delivery:
+                  $ref: '#/components/schemas/DeliveryLocation'
+                urgency:
+                  type: string
+                  enum: [standard, express, urgent]
+                maxPrice:
+                  type: number
+                  format: float
+      responses:
+        '201':
+          description: Delivery request created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/DeliveryRequest'
+
+  # QR Code Endpoints
+  /qr/pickup/generate:
+    post:
+      tags: [QR Codes]
+      summary: Generate pickup QR code
+      description: Generate a QR code for item pickup verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deliveryId]
+              properties:
+                deliveryId:
+                  type: string
+                  format: uuid
+                expirationTime:
+                  type: string
+                  format: date-time
+                securityLevel:
+                  type: string
+                  enum: [standard, high, maximum]
+      responses:
+        '201':
+          description: QR code generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/QRCode'
+
+  # Payment Endpoints
+  /payments/calculate-price:
+    post:
+      tags: [Payments]
+      summary: Calculate delivery price
+      description: Calculate the estimated price for a delivery based on various factors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deliveryRequest:
+                  type: object
+                  properties:
+                    route:
+                      type: object
+                      properties:
+                        origin:
+                          $ref: '#/components/schemas/Coordinates'
+                        destination:
+                          $ref: '#/components/schemas/Coordinates'
+                    item:
+                      $ref: '#/components/schemas/Item'
+                    urgency:
+                      type: string
+                      enum: [standard, express, urgent]
+      responses:
+        '200':
+          description: Price calculated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      pricing:
+                        type: object
+                        properties:
+                          total:
+                            type: number
+                            format: float
+                          breakdown:
+                            type: object
+                          currency:
+                            type: string
+
+  # Location Services
+  /location/track:
+    post:
+      tags: [Location Services]
+      summary: Update location
+      description: Update real-time location for active delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [deliveryId, location, timestamp]
+              properties:
+                deliveryId:
+                  type: string
+                  format: uuid
+                location:
+                  $ref: '#/components/schemas/Coordinates'
+                timestamp:
+                  type: string
+                  format: date-time
+                accuracy:
+                  type: number
+                  format: float
+      responses:
+        '200':
+          description: Location updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # Notification Endpoints
+  /notifications/push:
+    post:
+      tags: [Notifications]
+      summary: Send push notification
+      description: Send a push notification to users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recipients, notification]
+              properties:
+                recipients:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId:
+                        type: string
+                        format: uuid
+                      deviceTokens:
+                        type: array
+                        items:
+                          type: string
+                notification:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    body:
+                      type: string
+                    priority:
+                      type: string
+                      enum: [high, normal, low]
+      responses:
+        '200':
+          description: Notification sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+
+  # Admin Endpoints
+  /admin/dashboard:
+    get:
+      tags: [Admin]
+      summary: Get admin dashboard data
+      description: Retrieve overview data for admin dashboard
+      security:
+        - BearerAuth: []
+        - AdminAuth: []
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      overview:
+                        type: object
+                        properties:
+                          totalUsers:
+                            type: integer
+                          activeUsers:
+                            type: integer
+                          totalDeliveries:
+                            type: integer
+                          totalRevenue:
+                            type: number
+                            format: float
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization endpoints
+  - name: User Management
+    description: User profile and account management
+  - name: Trip Management
+    description: Trip creation and management for travelers
+  - name: Delivery Requests
+    description: Delivery request creation and matching
+  - name: QR Codes
+    description: QR code generation and validation for secure verification
+  - name: Payments
+    description: Payment processing and pricing calculations
+  - name: Location Services
+    description: Real-time location tracking and mapping services
+  - name: Notifications
+    description: Multi-channel notification system
+  - name: Admin
+    description: Administrative and management endpoints
+
+externalDocs:
+  description: Find more info about P2P Delivery API
+  url: https://docs.p2pdelivery.com
