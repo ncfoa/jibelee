@@ -157,14 +157,9 @@ app.get('/metrics', (req, res) => {
   res.json(metrics);
 });
 
-// API routes (will be implemented)
-app.use('/api/v1/trips', (req, res) => {
-  res.status(501).json({
-    success: false,
-    message: 'Trip routes are being implemented',
-    error: 'Service under construction'
-  });
-});
+// API routes
+const routes = require('./routes');
+app.use('/api/v1', routes);
 
 // API documentation placeholder
 app.get('/api/v1/docs', (req, res) => {
