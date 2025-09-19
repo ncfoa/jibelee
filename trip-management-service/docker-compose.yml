@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  # Trip Management Service
+  trip-service:
+    build:
+      context: .
+      target: development
+    container_name: trip-management-service
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - DB_HOST=trip-db
+      - DB_PORT=5432
+      - DB_NAME=trip_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_HOST=trip-redis
+      - REDIS_PORT=6379
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - JWT_SECRET=trip-service-jwt-secret-key
+      - LOG_LEVEL=debug
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - trip-logs:/app/logs
+    depends_on:
+      - trip-db
+      - trip-redis
+    networks:
+      - trip-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database
+  trip-db:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: trip-database
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=trip_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+    volumes:
+      - trip-db-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - trip-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d trip_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  trip-redis:
+    image: redis:7-alpine
+    container_name: trip-redis
+    ports:
+      - "6380:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - trip-redis-data:/data
+    networks:
+      - trip-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Redis Commander (Redis GUI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: trip-redis-commander
+    ports:
+      - "8082:8081"
+    environment:
+      - REDIS_HOSTS=local:trip-redis:6379
+    depends_on:
+      - trip-redis
+    networks:
+      - trip-network
+    restart: unless-stopped
+    profiles:
+      - tools
+
+  # pgAdmin (PostgreSQL GUI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: trip-pgadmin
+    ports:
+      - "5051:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@p2pdelivery.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+      - PGADMIN_CONFIG_SERVER_MODE=False
+    volumes:
+      - trip-pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - trip-db
+    networks:
+      - trip-network
+    restart: unless-stopped
+    profiles:
+      - tools
+
+  # Nginx (Load Balancer/Reverse Proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: trip-nginx
+    ports:
+      - "8003:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - trip-service
+    networks:
+      - trip-network
+    restart: unless-stopped
+    profiles:
+      - production
+
+volumes:
+  trip-db-data:
+    driver: local
+  trip-redis-data:
+    driver: local
+  trip-pgadmin-data:
+    driver: local
+  trip-logs:
+    driver: local
+
+networks:
+  trip-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
