@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  qr-service:
+    build: .
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - PORT=3006
+      - DB_HOST=qr-postgres
+      - DB_PORT=5432
+      - DB_NAME=qr_db
+      - DB_USER=qr_user
+      - DB_PASSWORD=qr_password
+      - REDIS_URL=redis://qr-redis:6379
+      - JWT_SECRET=your-jwt-secret-here
+      - QR_ENCRYPTION_KEY_STANDARD=your-standard-encryption-key-here
+      - QR_ENCRYPTION_KEY_HIGH=your-high-encryption-key-here
+      - QR_ENCRYPTION_KEY_MAXIMUM=your-maximum-encryption-key-here
+    depends_on:
+      - qr-postgres
+      - qr-redis
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+    networks:
+      - qr-network
+
+  qr-postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=qr_db
+      - POSTGRES_USER=qr_user
+      - POSTGRES_PASSWORD=qr_password
+    ports:
+      - "5436:5432"
+    volumes:
+      - qr-postgres-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - qr-network
+
+  qr-redis:
+    image: redis:7-alpine
+    ports:
+      - "6386:6379"
+    volumes:
+      - qr-redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - qr-network
+
+volumes:
+  qr-postgres-data:
+  qr-redis-data:
+
+networks:
+  qr-network:
+    driver: bridge
