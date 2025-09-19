@@ -262,6 +262,342 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 11. Validate Token
+
+**GET** `/validate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 12. Resend Verification Code
+
+**POST** `/resend-verification`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+## Account Management API
+
+**Base URL:** `/api/v1/auth/account`
+
+### 1. Reactivate Account
+
+**POST** `/reactivate`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+### 2. Get Account Status
+
+**GET** `/status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Update Account Settings
+
+**PATCH** `/settings`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "preferredLanguage": "en|es|fr|de|it|pt",
+  "timezone": "America/New_York",
+  "preferredCurrency": "USD|EUR|GBP|CAD|AUD",
+  "phoneNumber": "+1234567890"
+}
+```
+
+### 4. Export Account Data
+
+**GET** `/export`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Get Security Log
+
+**GET** `/security-log`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Deactivate Account
+
+**POST** `/deactivate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Delete Account
+
+**DELETE** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Session Management API
+
+**Base URL:** `/api/v1/auth/sessions`
+
+### 1. Get User Sessions
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 2. Get Current Session
+
+**GET** `/current`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Get Session Statistics
+
+**GET** `/stats`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 4. Check Suspicious Sessions
+
+**GET** `/suspicious`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Update Current Session
+
+**PATCH** `/current`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "pushToken": "fcm_token",
+  "location": "New York, NY"
+}
+```
+
+### 6. Extend Session
+
+**POST** `/current/extend`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Revoke Session
+
+**DELETE** `/{sessionId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Revoke All Sessions
+
+**DELETE** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Social Authentication API
+
+**Base URL:** `/api/v1/auth/social`
+
+### 1. Link Social Account
+
+**POST** `/link`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "provider": "google|facebook|apple",
+  "accessToken": "social_access_token",
+  "userInfo": {
+    "id": "social_user_id",
+    "email": "user@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "profilePicture": "https://example.com/pic.jpg"
+  }
+}
+```
+
+### 2. Unlink Social Account
+
+**DELETE** `/{provider}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Get Linked Accounts
+
+**GET** `/linked`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Two-Factor Authentication API
+
+**Base URL:** `/api/v1/auth/2fa`
+
+### 1. Enable 2FA
+
+**POST** `/enable`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "code": "123456"
+}
+```
+
+### 2. Disable 2FA
+
+**POST** `/disable`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "code": "123456"
+}
+```
+
+### 3. Verify 2FA Code
+
+**POST** `/verify`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "code": "123456"
+}
+```
+
+### 4. Get 2FA Status
+
+**GET** `/status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Regenerate Backup Codes
+
+**POST** `/regenerate-backup-codes`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "code": "123456"
+}
+```
+
+### 6. Get Recovery Codes
+
+**POST** `/recovery-codes`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "code": "123456"
+}
+```
+
+### 7. 2FA Login
+
+**POST** `/login`
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "code": "123456",
+  "backupCode": "backup123"
+}
+```
+
 ---
 
 ## User Management Service API
@@ -546,6 +882,464 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 9. Search Users
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `search`: Search term
+- `userType`: Filter by user type
+- `location`: Location filter
+- `page`: Page number
+- `limit`: Items per page
+
+### 10. Get User Statistics
+
+**GET** `/{userId}/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `period`: Time period (week|month|quarter|year)
+- `startDate`: Start date
+- `endDate`: End date
+
+### 11. Get User Activity
+
+**GET** `/me/activity`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `page`: Page number
+- `limit`: Items per page
+
+### 12. Delete User Account
+
+**DELETE** `/me`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Address Management API
+
+**Base URL:** `/api/v1/users`
+
+### 1. Get User Addresses
+
+**GET** `/me/addresses`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 2. Update Address
+
+**PUT** `/me/addresses/{addressId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "type": "home|work|other",
+  "label": "Updated Label",
+  "street": "456 Updated St",
+  "city": "Updated City",
+  "state": "UC",
+  "country": "US",
+  "postalCode": "54321"
+}
+```
+
+### 3. Delete Address
+
+**DELETE** `/me/addresses/{addressId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 4. Set Default Address
+
+**POST** `/me/addresses/{addressId}/default`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Geocode Address
+
+**POST** `/geocode`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "street": "123 Main St",
+  "city": "New York",
+  "state": "NY",
+  "country": "US",
+  "postalCode": "10001"
+}
+```
+
+### 6. Reverse Geocode
+
+**GET** `/reverse-geocode`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `lat`: Latitude
+- `lng`: Longitude
+
+### 7. Validate Address
+
+**POST** `/validate-address`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Find Nearby Addresses (Admin)
+
+**GET** `/nearby-addresses`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `lat`: Latitude
+- `lng`: Longitude
+- `radius`: Search radius
+
+## Review Management API
+
+**Base URL:** `/api/v1/users`
+
+### 1. Add Review Response
+
+**POST** `/reviews/{reviewId}/response`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "response": "Thank you for your feedback!"
+}
+```
+
+### 2. Report Review
+
+**POST** `/reviews/{reviewId}/report`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "inappropriate|spam|fake|other",
+  "description": "Detailed reason for reporting"
+}
+```
+
+### 3. Vote on Review
+
+**POST** `/reviews/{reviewId}/vote`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "vote": "helpful|not_helpful"
+}
+```
+
+## Verification Management API
+
+**Base URL:** `/api/v1/users`
+
+### 1. Get Verification Status
+
+**GET** `/me/verification/status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 2. Resubmit Verification
+
+**POST** `/me/verification/resubmit`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+```
+
+**Request Body:**
+```
+documentType: "passport|driving_license|national_id"
+frontImage: <file>
+backImage: <file>
+selfieImage: <file>
+```
+
+### 3. Verify Phone Number
+
+**POST** `/me/verify-phone`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "phoneNumber": "+1234567890"
+}
+```
+
+### 4. Confirm Phone Verification
+
+**POST** `/me/verify-phone/confirm`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "verificationCode": "123456"
+}
+```
+
+### 5. Approve Verification (Admin)
+
+**POST** `/verification/{verificationId}/approve`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Reject Verification (Admin)
+
+**POST** `/verification/{verificationId}/reject`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "document_unclear|invalid_document|other",
+  "notes": "Please provide a clearer image"
+}
+```
+
+### 7. Get Pending Verifications (Admin)
+
+**GET** `/verification/pending`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Get Verification Statistics (Admin)
+
+**GET** `/verification/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## User Preferences API
+
+**Base URL:** `/api/v1/users`
+
+### 1. Update Notification Preferences
+
+**PUT** `/me/notifications`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "email": true,
+  "push": true,
+  "sms": false
+}
+```
+
+### 2. Get Preference Setting
+
+**GET** `/me/preferences/{category}/{setting}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Update Preference Setting
+
+**PUT** `/me/preferences/{category}/{setting}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "value": "setting_value"
+}
+```
+
+### 4. Reset Preferences
+
+**POST** `/me/preferences/reset`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## User Relationships API
+
+**Base URL:** `/api/v1/users`
+
+### 1. Block User
+
+**POST** `/me/blocked-users`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "userId": "user_uuid",
+  "reason": "inappropriate_behavior|spam|harassment|other",
+  "comment": "Optional reason description"
+}
+```
+
+### 2. Unblock User
+
+**DELETE** `/me/blocked-users/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Get Blocked Users
+
+**GET** `/me/blocked-users`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 4. Add User to Favorites
+
+**POST** `/me/favorites`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "userId": "user_uuid",
+  "notes": "Excellent service",
+  "priority": "high|medium|low",
+  "notificationSettings": {
+    "notifyOnNewTrip": true,
+    "notifyOnPriceChange": true,
+    "maxNotificationDistance": 50
+  }
+}
+```
+
+### 5. Remove User from Favorites
+
+**DELETE** `/me/favorites/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Get Favorite Users
+
+**GET** `/me/favorites`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
 ---
 
 ## Trip Management Service API
@@ -799,6 +1593,471 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 5. Get My Trips
+
+**GET** `/my-trips`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `status`: Filter by status
+- `page`: Page number
+- `limit`: Items per page
+
+### 6. Update Trip Status
+
+**POST** `/{tripId}/status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "status": "active|completed|cancelled",
+  "reason": "Status change reason"
+}
+```
+
+### 7. Cancel Trip
+
+**POST** `/{tripId}/cancel`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "personal|weather|emergency|other",
+  "description": "Detailed cancellation reason"
+}
+```
+
+### 8. Duplicate Trip
+
+**POST** `/{tripId}/duplicate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "departureTime": "2025-02-15T10:00:00Z",
+  "arrivalTime": "2025-02-15T11:30:00Z",
+  "modifications": {
+    "title": "Updated trip title",
+    "capacity": {
+      "weight": 6,
+      "volume": 12,
+      "items": 4
+    },
+    "pricing": {
+      "basePrice": 20.00
+    }
+  }
+}
+```
+
+### 9. Get Capacity Status
+
+**GET** `/{tripId}/capacity`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+### 10. Check Capacity
+
+**POST** `/{tripId}/capacity/check`
+
+**Request Body:**
+```json
+{
+  "capacity": {
+    "weight": 2.5,
+    "volume": 5,
+    "items": 1
+  }
+}
+```
+
+### 11. Reserve Capacity
+
+**POST** `/{tripId}/capacity/reserve`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "capacity": {
+    "weight": 2.5,
+    "volume": 5,
+    "items": 1
+  },
+  "reservationId": "reservation_uuid",
+  "holdTime": 15
+}
+```
+
+### 12. Release Capacity
+
+**POST** `/{tripId}/capacity/release`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reservationId": "reservation_uuid"
+}
+```
+
+### 13. Get Trip Weather
+
+**GET** `/{tripId}/weather`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+### 14. Refresh Trip Weather
+
+**POST** `/{tripId}/weather/refresh`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 15. Share Trip
+
+**POST** `/{tripId}/share`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "method": "link|qr|social",
+  "platform": "whatsapp|telegram|facebook|twitter",
+  "message": "Check out my trip!"
+}
+```
+
+### 16. Export Trip Data
+
+**GET** `/{tripId}/export`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `format`: Export format (json|csv|pdf)
+- `includePersonalData`: Include personal data (true|false)
+
+## Trip Templates API
+
+**Base URL:** `/api/v1/trips/templates`
+
+### 1. Get Templates
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `page`: Page number
+- `limit`: Items per page
+
+### 2. Create Template
+
+**POST** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Business Trip Template",
+  "description": "Regular business trip template",
+  "tripData": {
+    "type": "flight",
+    "capacity": {
+      "weight": 5,
+      "volume": 10,
+      "items": 3
+    }
+  },
+  "category": "business",
+  "tags": ["frequent", "reliable"],
+  "isPublic": false
+}
+```
+
+### 3. Get Public Templates
+
+**GET** `/public`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+### 4. Get Popular Templates
+
+**GET** `/popular`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `limit`: Number of results (default: 10)
+
+### 5. Search Templates
+
+**GET** `/search`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `origin`: Origin location
+- `destination`: Destination location
+- `category`: Template category
+- `page`: Page number
+- `limit`: Items per page
+
+### 6. Get Template Categories
+
+**GET** `/categories`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+### 7. Get Template by ID
+
+**GET** `/{templateId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+### 8. Update Template
+
+**PUT** `/{templateId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Updated Template Name",
+  "description": "Updated description",
+  "tripData": {},
+  "category": "business",
+  "tags": ["updated"],
+  "isPublic": true
+}
+```
+
+### 9. Delete Template
+
+**DELETE** `/{templateId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 10. Create Trip from Template
+
+**POST** `/{templateId}/create-trip`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "departureTime": "2025-02-01T10:00:00Z",
+  "arrivalTime": "2025-02-01T11:30:00Z",
+  "overrides": {
+    "title": "Custom trip title",
+    "capacity": {
+      "weight": 6
+    },
+    "pricing": {
+      "basePrice": 25.00
+    }
+  }
+}
+```
+
+## Trip Analytics API
+
+**Base URL:** `/api/v1/trips/analytics`
+
+### 1. Get Trip Analytics
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `period`: Time period
+- `startDate`: Start date
+- `endDate`: End date
+
+### 2. Get Trip Statistics
+
+**GET** `/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `period`: Time period (week|month|quarter|year)
+- `groupBy`: Group by (day|week|month)
+- `startDate`: Start date
+- `endDate`: End date
+
+### 3. Get Trip Performance
+
+**GET** `/{tripId}/performance`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 4. Get Popular Routes
+
+**GET** `/popular-routes`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `period`: Time period
+- `limit`: Number of results
+- `origin`: Origin filter
+- `destination`: Destination filter
+
+### 5. Get Trip Recommendations
+
+**GET** `/recommendations`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `origin`: Origin location
+- `destination`: Destination location
+- `type`: Trip type
+- `preferences`: User preferences
+
+## Weather API
+
+**Base URL:** `/api/v1/trips/weather`
+
+### 1. Get Weather Alerts
+
+**GET** `/alerts`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `severity`: Alert severity (low|medium|high|critical)
+- `limit`: Number of results
+
+### 2. Get Route Forecast
+
+**POST** `/forecast`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Request Body:**
+```json
+{
+  "origin": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "destination": {
+    "lat": 42.3601,
+    "lng": -71.0589
+  },
+  "departureTime": "2025-02-01T10:00:00Z"
+}
+```
+
+### 3. Get Detailed Weather
+
+**GET** `/{tripId}/detailed`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
 ---
 
 ## Delivery Request Service API
@@ -1021,6 +2280,238 @@ Authorization: Bearer <access_token>
     "contractId": "contract_uuid"
   }
 }
+```
+
+### 4. Search Delivery Requests
+
+**GET** `/search`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `origin`: Origin location
+- `destination`: Destination location
+- `category`: Item category
+- `maxPrice`: Maximum price
+- `urgency`: Urgency level
+- `page`: Page number
+- `limit`: Items per page
+
+### 5. Get Popular Routes
+
+**GET** `/popular-routes`
+
+**Headers:**
+```
+Authorization: Bearer <access_token> (optional)
+```
+
+**Query Parameters:**
+- `page`: Page number
+- `limit`: Items per page
+
+### 6. Get Recommendations
+
+**GET** `/recommendations`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Get Statistics
+
+**GET** `/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Get My Requests
+
+**GET** `/my-requests`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `status`: Filter by status
+- `page`: Page number
+- `limit`: Items per page
+
+### 9. Update Delivery Request
+
+**PUT** `/{requestId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "title": "Updated title",
+  "description": "Updated description",
+  "maxPrice": 60.00,
+  "urgency": "express"
+}
+```
+
+### 10. Cancel Delivery Request
+
+**POST** `/{requestId}/cancel`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "no_longer_needed|found_alternative|price_too_high|other",
+  "description": "Detailed cancellation reason"
+}
+```
+
+### 11. Find Matches
+
+**POST** `/{requestId}/find-matches`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 12. Duplicate Request
+
+**POST** `/{requestId}/duplicate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 13. Get Request Analytics
+
+**GET** `/{requestId}/analytics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 14. Report Request
+
+**POST** `/{requestId}/report`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "inappropriate|spam|fraudulent|other",
+  "description": "Detailed report reason"
+}
+```
+
+## Offer Management API
+
+**Base URL:** `/api/v1/deliveries/offers`
+
+### 1. Get My Offers
+
+**GET** `/my-offers`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `status`: Filter by status
+- `page`: Page number
+- `limit`: Items per page
+
+### 2. Get Offer Statistics
+
+**GET** `/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Update Offer
+
+**PUT** `/{offerId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "price": 35.00,
+  "message": "Updated offer message",
+  "estimatedPickupTime": "2025-02-01T12:00:00Z",
+  "estimatedDeliveryTime": "2025-02-01T14:00:00Z"
+}
+```
+
+### 4. Decline Offer
+
+**POST** `/{offerId}/decline`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "price_too_low|timing_conflict|other",
+  "description": "Detailed decline reason"
+}
+```
+
+### 5. Withdraw Offer
+
+**DELETE** `/{offerId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "changed_mind|schedule_conflict|other",
+  "description": "Detailed withdrawal reason"
+}
+```
+
+### 6. Get Request Offers
+
+**GET** `/requests/{requestId}/offers`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
 ```
 
 ---
@@ -1293,6 +2784,400 @@ Authorization: Bearer <access_token>
     }
   }
 }
+```
+
+### 5. Bulk Generate QR Codes
+
+**POST** `/bulk-generate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "requests": [
+    {
+      "deliveryId": "delivery_uuid_1",
+      "type": "pickup|delivery",
+      "expirationTime": "2025-02-01T12:00:00Z"
+    },
+    {
+      "deliveryId": "delivery_uuid_2",
+      "type": "pickup|delivery",
+      "expirationTime": "2025-02-01T15:00:00Z"
+    }
+  ]
+}
+```
+
+### 6. Get QR Code Details
+
+**GET** `/{qrCodeId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Get Delivery QR Codes
+
+**GET** `/delivery/{deliveryId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Download QR Code Image
+
+**GET** `/{qrCodeId}/image`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 9. Regenerate QR Code
+
+**POST** `/{qrCodeId}/regenerate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 10. Revoke QR Code
+
+**POST** `/{qrCodeId}/revoke`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 11. Get QR Code History
+
+**GET** `/history`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `deliveryId`: Filter by delivery ID
+- `type`: Filter by type (pickup|delivery)
+- `status`: Filter by status
+- `page`: Page number
+- `limit`: Items per page
+
+### 12. Get QR Code Analytics
+
+**GET** `/analytics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 13. Get Performance Metrics
+
+**GET** `/performance-metrics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 14. Test QR Scanner
+
+**POST** `/test-scanner`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "qrCodeData": "test_qr_data",
+  "deviceInfo": {
+    "platform": "ios|android|web",
+    "appVersion": "1.0.0"
+  }
+}
+```
+
+## QR Code Validation API
+
+**Base URL:** `/api/v1/qr/validation`
+
+### 1. Generic QR Validation
+
+**POST** `/validate`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "qrCodeData": "QR_ENCRYPTED_DATA_STRING",
+  "scannerLocation": {
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "accuracy": 10
+  },
+  "deviceInfo": {
+    "deviceId": "device_uuid",
+    "platform": "ios|android|web"
+  }
+}
+```
+
+### 2. Validate Backup Code
+
+**POST** `/validate-backup`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "backupCode": "BACKUP-123-456-789",
+  "deliveryId": "delivery_uuid",
+  "type": "pickup|delivery"
+}
+```
+
+### 3. Verify QR Code Integrity
+
+**POST** `/verify-integrity`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "qrCodeData": "QR_ENCRYPTED_DATA_STRING"
+}
+```
+
+### 4. Get QR Code Scans
+
+**GET** `/{qrCodeId}/scans`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Get Validation Statistics
+
+**GET** `/validation-stats`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Get Suspicious Scans
+
+**GET** `/suspicious-scans`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Get Validation Status
+
+**GET** `/validation-status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Emergency Override API
+
+**Base URL:** `/api/v1/qr/emergency`
+
+### 1. Request Emergency Override
+
+**POST** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "deliveryId": "delivery_uuid",
+  "reason": "qr_code_damaged|device_malfunction|emergency_situation|other",
+  "description": "Detailed description of emergency",
+  "evidence": [
+    {
+      "type": "photo|video|document",
+      "url": "https://evidence.com/file.jpg"
+    }
+  ]
+}
+```
+
+### 2. Get Override History
+
+**GET** `/history`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Get Override Details
+
+**GET** `/{overrideId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 4. Cancel Override Request
+
+**POST** `/{overrideId}/cancel`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Use Emergency Override
+
+**POST** `/{overrideId}/use`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "deliveryId": "delivery_uuid",
+  "location": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "evidence": {
+    "photoUrl": "https://photos.example.com/override.jpg",
+    "notes": "Emergency override used due to QR code damage"
+  }
+}
+```
+
+### 6. Get Pending Overrides (Admin)
+
+**GET** `/pending`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Approve Override (Admin)
+
+**POST** `/{overrideId}/approve`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "approvalNotes": "Valid emergency situation",
+  "conditions": [
+    "must_provide_photo_evidence",
+    "limited_to_current_delivery"
+  ]
+}
+```
+
+### 8. Reject Override (Admin)
+
+**POST** `/{overrideId}/reject`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "rejectionReason": "insufficient_evidence|not_emergency|other",
+  "notes": "Please provide additional evidence"
+}
+```
+
+### 9. Get Override Statistics (Admin)
+
+**GET** `/statistics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 10. Get Queue Metrics (Admin)
+
+**GET** `/queue-metrics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 11. Bulk Approve Overrides (Admin)
+
+**POST** `/bulk-approve`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "overrideIds": ["override_1", "override_2"],
+  "approvalNotes": "Batch approval for valid emergencies"
+}
+```
+
+### 12. Get Delivery Override Status
+
+**GET** `/delivery/{deliveryId}/status`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
 ```
 
 ---
@@ -1632,6 +3517,147 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 5. Get Payment Status
+
+**GET** `/intents/{paymentIntentId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Cancel Payment
+
+**POST** `/intents/{paymentIntentId}/cancel`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "customer_request|fraud_detected|technical_issue|other"
+}
+```
+
+### 7. Get Payment History
+
+**GET** `/history`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `status`: Filter by payment status
+- `dateFrom`: Start date
+- `dateTo`: End date
+- `page`: Page number
+- `limit`: Items per page
+
+## Pricing API
+
+**Base URL:** `/api/v1/payments/pricing`
+
+### 1. Get Market Analysis
+
+**GET** `/market-analysis`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `origin`: Origin location
+- `destination`: Destination location
+- `category`: Item category
+- `timeframe`: Analysis timeframe
+
+### 2. Optimize Pricing
+
+**POST** `/optimize-pricing`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "deliveryRequest": {
+    "route": {
+      "origin": {
+        "lat": 40.7128,
+        "lng": -74.0060
+      },
+      "destination": {
+        "lat": 42.3601,
+        "lng": -71.0589
+      }
+    },
+    "item": {
+      "weight": 2.5,
+      "category": "electronics",
+      "value": 500.00
+    }
+  },
+  "objective": "maximize_acceptance|maximize_revenue|balanced",
+  "constraints": {
+    "minPrice": 20.00,
+    "maxPrice": 80.00
+  }
+}
+```
+
+### 3. Get Exchange Rates
+
+**GET** `/exchange-rates`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `from`: Source currency code
+- `to`: Target currency code
+- `amount`: Amount to convert (optional)
+
+## Webhook API
+
+**Base URL:** `/api/v1/payments/webhooks`
+
+### 1. Stripe Webhook Handler
+
+**POST** `/stripe`
+
+**Headers:**
+```
+Stripe-Signature: <webhook_signature>
+```
+
+**Request Body:**
+```json
+{
+  "id": "evt_1234567890",
+  "object": "event",
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_1234567890",
+      "amount": 6523,
+      "currency": "usd",
+      "status": "succeeded"
+    }
+  }
+}
+```
+
 ---
 
 ## Location Service API
@@ -1904,6 +3930,512 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 5. Get Location History
+
+**GET** `/history/{deliveryId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `startTime`: Start time filter
+- `endTime`: End time filter
+- `page`: Page number
+- `limit`: Items per page
+
+### 6. Find Nearby Travelers
+
+**GET** `/travelers/nearby`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `lat`: Latitude
+- `lng`: Longitude
+- `radius`: Search radius in km
+- `userType`: Filter by user type
+- `minRating`: Minimum rating
+
+### 7. Get ETA Updates
+
+**GET** `/eta/{deliveryId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Get Location Analytics
+
+**GET** `/analytics`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `period`: Time period
+- `deliveryId`: Filter by delivery
+- `userId`: Filter by user
+
+## Geocoding Extended API
+
+**Base URL:** `/api/v1/location/geocode`
+
+### 1. Batch Geocoding
+
+**POST** `/batch`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "requests": [
+    {
+      "address": "123 Main St, New York, NY",
+      "type": "forward"
+    },
+    {
+      "lat": 40.7128,
+      "lng": -74.0060,
+      "type": "reverse"
+    }
+  ]
+}
+```
+
+### 2. Get Address Suggestions
+
+**GET** `/suggestions`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `input`: Search input (minimum 2 characters)
+- `country`: Country filter
+- `limit`: Maximum results
+
+### 3. Get Place Details
+
+**GET** `/place/{placeId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Route Optimization API
+
+**Base URL:** `/api/v1/location/route`
+
+### 1. Get Route Traffic
+
+**GET** `/{routeId}/traffic`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 2. Get Traffic Information
+
+**GET** `/traffic`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `route`: Route identifier
+- `origin`: Origin coordinates
+- `destination`: Destination coordinates
+- `departureTime`: Departure time
+
+## Geofence Management API
+
+**Base URL:** `/api/v1/location/geofence`
+
+### 1. Create Geofence
+
+**POST** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Pickup Zone",
+  "type": "circular|polygon",
+  "center": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "radius": 100,
+  "deliveryId": "delivery_uuid",
+  "events": ["enter", "exit"],
+  "active": true
+}
+```
+
+### 2. Get Active Geofences
+
+**GET** `/active`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `deliveryId`: Filter by delivery
+- `type`: Filter by type
+- `lat`: Location latitude
+- `lng`: Location longitude
+
+### 3. Update Geofence
+
+**PUT** `/{geofenceId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "name": "Updated Geofence Name",
+  "radius": 150,
+  "active": false
+}
+```
+
+### 4. Delete Geofence
+
+**DELETE** `/{geofenceId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Check Geofence Status
+
+**POST** `/check`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "location": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "deliveryId": "delivery_uuid"
+}
+```
+
+### 6. Get Geofence Events
+
+**GET** `/{geofenceId}/events`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Get Geofence Statistics
+
+**GET** `/{geofenceId}/stats`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Create Delivery Geofences
+
+**POST** `/delivery`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "deliveryId": "delivery_uuid",
+  "pickupLocation": {
+    "lat": 40.7128,
+    "lng": -74.0060
+  },
+  "deliveryLocation": {
+    "lat": 42.3601,
+    "lng": -71.0589
+  },
+  "radius": 100
+}
+```
+
+### 9. Get Geofence Recommendations
+
+**GET** `/recommendations`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `lat`: Location latitude
+- `lng`: Location longitude
+- `deliveryType`: Type of delivery
+
+## Emergency Location API
+
+**Base URL:** `/api/v1/location/emergency`
+
+### 1. Report Emergency
+
+**POST** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "type": "medical|accident|theft|harassment|other",
+  "severity": "low|medium|high|critical",
+  "location": {
+    "lat": 40.7128,
+    "lng": -74.0060,
+    "accuracy": 10
+  },
+  "deliveryId": "delivery_uuid",
+  "description": "Emergency description",
+  "contactInfo": {
+    "phone": "+1234567890",
+    "emergencyContact": "+0987654321"
+  }
+}
+```
+
+### 2. Update Emergency Status
+
+**PUT** `/{emergencyId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "status": "reported|responding|resolved|cancelled",
+  "notes": "Status update notes",
+  "responderInfo": {
+    "name": "Emergency Responder",
+    "contact": "+1234567890"
+  }
+}
+```
+
+### 3. Get Nearby Emergency Services
+
+**GET** `/services`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `lat`: Location latitude
+- `lng`: Location longitude
+- `radius`: Search radius
+- `type`: Service type (police|hospital|fire|all)
+
+### 4. Get Emergency Details
+
+**GET** `/{emergencyId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Get Emergency History
+
+**GET** `/history`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Get Emergency Statistics
+
+**GET** `/stats`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 7. Get Active Emergencies (Admin)
+
+**GET** `/active`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+## Privacy Management API
+
+**Base URL:** `/api/v1/location/privacy`
+
+### 1. Update Privacy Settings
+
+**PUT** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "trackingLevel": "precise|approximate|city_level|disabled",
+  "shareWith": {
+    "customers": true,
+    "platform": true,
+    "emergencyContacts": true,
+    "thirdParties": false
+  },
+  "dataRetention": {
+    "period": 90,
+    "deleteAfterDelivery": false
+  },
+  "anonymization": {
+    "enabled": true,
+    "delay": 24
+  }
+}
+```
+
+### 2. Get Privacy Settings
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 3. Export Location Data
+
+**POST** `/export`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "format": "json|csv|xml",
+  "dateRange": {
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-02-01T00:00:00Z"
+  }
+}
+```
+
+### 4. Get Export Status
+
+**GET** `/export/{exportId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 5. Delete Location Data
+
+**DELETE** `/data`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "confirmDeletion": true,
+  "retainDays": 0
+}
+```
+
+### 6. Anonymize Data
+
+**POST** `/anonymize`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "olderThanDays": 30,
+  "preserveAggregates": true
+}
+```
+
+### 7. Get Privacy Audit Log
+
+**GET** `/audit`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Query Parameters:**
+- `limit`: Maximum results
+- `offset`: Results offset
+
 ---
 
 ## Notification Service API
@@ -2157,6 +4689,374 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### 4. Send Custom Notification
+
+**POST** `/send-custom`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "recipients": ["user_uuid_1", "user_uuid_2"],
+  "channels": ["push", "email"],
+  "title": "Custom Notification",
+  "message": "Custom message content",
+  "data": {
+    "customField": "customValue"
+  },
+  "priority": "high|normal|low",
+  "sendAt": "2025-02-01T15:00:00Z"
+}
+```
+
+### 5. Send Bulk Notifications (Admin)
+
+**POST** `/send-bulk`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "targeting": {
+    "userTypes": ["customer", "traveler"],
+    "locations": [
+      {
+        "lat": 40.7128,
+        "lng": -74.0060,
+        "radius": 10000
+      }
+    ],
+    "segments": ["premium_users"]
+  },
+  "notification": {
+    "title": "Platform Update",
+    "body": "New features available!",
+    "channels": ["push", "email"]
+  },
+  "scheduling": {
+    "sendAt": "2025-02-01T12:00:00Z",
+    "timezone": "America/New_York"
+  }
+}
+```
+
+### 6. Test Notification (Admin)
+
+**POST** `/test`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "userId": "test_user_uuid",
+  "channel": "push|email|sms",
+  "template": "delivery_update",
+  "testData": {
+    "deliveryId": "test_delivery_uuid"
+  }
+}
+```
+
+### 7. Mark as Read
+
+**POST** `/{notificationId}/read`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 8. Mark as Clicked
+
+**POST** `/{notificationId}/clicked`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "actionId": "track_delivery",
+  "metadata": {
+    "source": "notification_center"
+  }
+}
+```
+
+### 9. Mark All as Read
+
+**PUT** `/user/{userId}/read-all`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 10. Delete Notification
+
+**DELETE** `/{notificationId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 11. Register Device Token
+
+**POST** `/device-tokens`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "token": "fcm_device_token",
+  "platform": "ios|android|web",
+  "appVersion": "1.0.0",
+  "deviceInfo": {
+    "model": "iPhone 14",
+    "osVersion": "16.0"
+  }
+}
+```
+
+### 12. Update Device Token
+
+**PUT** `/device-tokens/{tokenId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "token": "updated_fcm_token",
+  "active": true
+}
+```
+
+### 13. Get Notification Statistics
+
+**GET** `/stats/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 14. Health Check
+
+**GET** `/health`
+
+## Notification Preferences API
+
+**Base URL:** `/api/v1/notifications/preferences`
+
+### 1. Get User Preferences
+
+**GET** `/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 2. Update User Preferences
+
+**PUT** `/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "channels": {
+    "push": {
+      "enabled": true,
+      "categories": {
+        "delivery_updates": true,
+        "marketing": false,
+        "system_alerts": true
+      }
+    },
+    "email": {
+      "enabled": true,
+      "categories": {
+        "delivery_updates": true,
+        "marketing": true,
+        "system_alerts": true
+      }
+    },
+    "sms": {
+      "enabled": false,
+      "categories": {
+        "delivery_updates": false,
+        "marketing": false,
+        "system_alerts": true
+      }
+    }
+  },
+  "quietHours": {
+    "enabled": true,
+    "startTime": "22:00",
+    "endTime": "08:00",
+    "timezone": "America/New_York"
+  }
+}
+```
+
+### 3. Update Channel Preferences
+
+**PUT** `/{userId}/channels/{channel}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "enabled": true,
+  "categories": {
+    "delivery_updates": true,
+    "marketing": false
+  }
+}
+```
+
+### 4. Update Quiet Hours
+
+**PUT** `/{userId}/quiet-hours`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "enabled": true,
+  "startTime": "23:00",
+  "endTime": "07:00",
+  "timezone": "America/New_York",
+  "emergencyOverride": true
+}
+```
+
+### 5. Get User Settings
+
+**GET** `/{userId}/settings`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 6. Update User Setting
+
+**PUT** `/{userId}/settings/{settingKey}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "value": "setting_value"
+}
+```
+
+### 7. Bulk Update Settings
+
+**PUT** `/{userId}/settings`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "language": "en",
+  "frequency": "immediate|hourly|daily",
+  "groupSimilar": true
+}
+```
+
+### 8. Reset Preferences
+
+**POST** `/{userId}/reset`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 9. Export Preferences
+
+**GET** `/{userId}/export`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+### 10. Import Preferences
+
+**POST** `/{userId}/import`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
+**Request Body:**
+```json
+{
+  "preferences": {
+    "channels": {},
+    "quietHours": {},
+    "settings": {}
+  }
+}
+```
+
+### 11. Get Preference Statistics (Admin)
+
+**GET** `/stats/overview`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+```
+
 ---
 
 ## Admin Service API
@@ -2387,23 +5287,280 @@ X-Admin-Token: <admin_token>
 }
 ```
 
+### 5. Get User Details
+
+**GET** `/users/{userId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+## Analytics API
+
+**Base URL:** `/api/v1/admin/analytics`
+
+### 1. Get System Analytics
+
+**GET** `/system`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Query Parameters:**
+- `period`: Time period (day|week|month|quarter|year)
+- `startDate`: Start date
+- `endDate`: End date
+
+### 2. Export Analytics Data
+
+**POST** `/export`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "dataTypes": ["users", "deliveries", "transactions"],
+  "format": "csv|json|xlsx",
+  "dateRange": {
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-02-01T00:00:00Z"
+  },
+  "filters": {
+    "userTypes": ["customer", "traveler"],
+    "status": ["active", "completed"]
+  }
+}
+```
+
+## Dispute Management API
+
+**Base URL:** `/api/v1/admin/disputes`
+
+### 1. Get Disputes
+
+**GET** `/`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Query Parameters:**
+- `status`: Filter by status (open|under_review|resolved|escalated)
+- `priority`: Filter by priority (low|medium|high|critical)
+- `assignedTo`: Filter by assigned admin
+- `page`: Page number
+- `limit`: Items per page
+
+### 2. Get Dispute Details
+
+**GET** `/{disputeId}`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+### 3. Assign Dispute
+
+**PUT** `/{disputeId}/assign`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "assignedTo": "admin_uuid",
+  "priority": "high",
+  "notes": "Urgent dispute requiring immediate attention"
+}
+```
+
+### 4. Resolve Dispute
+
+**PUT** `/{disputeId}/resolve`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "resolution": "customer_favor|traveler_favor|partial_refund|no_action",
+  "refundAmount": 25.00,
+  "notes": "Resolution details and reasoning",
+  "compensations": {
+    "customer": 25.00,
+    "traveler": 0.00
+  }
+}
+```
+
+## Financial Management API
+
+**Base URL:** `/api/v1/admin/finance`
+
+### 1. Get Financial Overview
+
+**GET** `/overview`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Query Parameters:**
+- `period`: Time period
+- `currency`: Currency filter
+
+### 2. Get Transactions
+
+**GET** `/transactions`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Query Parameters:**
+- `status`: Transaction status
+- `type`: Transaction type
+- `minAmount`: Minimum amount
+- `maxAmount`: Maximum amount
+- `dateFrom`: Start date
+- `dateTo`: End date
+- `page`: Page number
+- `limit`: Items per page
+
+### 3. Manual Payout
+
+**POST** `/payouts/manual`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "travelerId": "traveler_uuid",
+  "amount": 150.00,
+  "currency": "USD",
+  "reason": "manual_adjustment|bonus|compensation|other",
+  "description": "Manual payout for exceptional service",
+  "reference": "MANUAL_PAYOUT_001"
+}
+```
+
+## System Management API
+
+**Base URL:** `/api/v1/admin/system`
+
+### 1. Update System Configuration
+
+**PUT** `/config`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "platform": {
+    "maintenanceMode": false,
+    "registrationEnabled": true,
+    "apiRateLimit": 1500
+  },
+  "features": {
+    "realTimeTracking": true,
+    "autoMatching": false
+  },
+  "limits": {
+    "maxDeliveryValue": 6000.00,
+    "maxDeliveryWeight": 30.0
+  }
+}
+```
+
+### 2. Create System Backup
+
+**POST** `/backups`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Request Body:**
+```json
+{
+  "type": "full|incremental|database_only",
+  "description": "Weekly full backup",
+  "compression": true,
+  "encryption": true
+}
+```
+
+### 3. Get System Backups
+
+**GET** `/backups`
+
+**Headers:**
+```
+Authorization: Bearer <access_token>
+X-Admin-Token: <admin_token>
+```
+
+**Query Parameters:**
+- `type`: Backup type
+- `status`: Backup status
+- `page`: Page number
+- `limit`: Items per page
+
 ---
 
 ## 📊 API Summary Statistics
 
 | Service | Endpoints | Key Features |
 |---------|-----------|--------------|
-| Authentication | 18 endpoints | JWT, 2FA, Social Login, Session Management |
-| User Management | 25 endpoints | Profiles, Verification, Reviews, Favorites |
-| Trip Management | 20 endpoints | CRUD, Templates, Analytics, Weather |
-| Delivery Requests | 20 endpoints | Matching, Offers, Market Analysis |
-| QR Code System | 15 endpoints | Generation, Validation, Security Audit |
-| Payment System | 20 endpoints | Pricing, Escrow, Disputes, Tax Documents |
-| Location Services | 15 endpoints | Tracking, Geofencing, Route Optimization |
-| Notifications | 20 endpoints | Multi-channel, Templates, Analytics |
-| Admin Dashboard | 20 endpoints | Management, Monitoring, Configuration |
+| Authentication | 32 endpoints | JWT, 2FA, Social Login, Session Management, Account Management |
+| User Management | 45 endpoints | Profiles, Verification, Reviews, Favorites, Addresses, Preferences |
+| Trip Management | 42 endpoints | CRUD, Templates, Analytics, Weather, Capacity Management |
+| Delivery Requests | 28 endpoints | Matching, Offers, Market Analysis, Request Management |
+| QR Code System | 35 endpoints | Generation, Validation, Security Audit, Emergency Override |
+| Payment System | 15 endpoints | Pricing, Escrow, Webhooks, Market Analysis |
+| Location Services | 38 endpoints | Tracking, Geofencing, Route Optimization, Privacy, Emergency |
+| Notifications | 25 endpoints | Multi-channel, Templates, Preferences, Analytics |
+| Admin Dashboard | 18 endpoints | Management, Monitoring, Configuration, Analytics, Disputes |
 
-**Total: 173 Comprehensive Endpoints**
+**Total: 278 Comprehensive Endpoints**
 
 ---
 
