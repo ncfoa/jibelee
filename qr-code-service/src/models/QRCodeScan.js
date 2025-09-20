@@ -39,6 +39,12 @@ const QRCodeScan = sequelize.define('QRCodeScan', {
     field: 'scan_result'
   },
   
+  verificationStatus: {
+    type: DataTypes.ENUM('verified', 'failed', 'pending', 'bypassed'),
+    allowNull: false,
+    field: 'verification_status'
+  },
+  
   scanLocation: {
     type: DataTypes.GEOGRAPHY('POINT', 4326),
     allowNull: true,
@@ -46,38 +52,9 @@ const QRCodeScan = sequelize.define('QRCodeScan', {
   },
   
   scanAccuracy: {
-    type: DataTypes.FLOAT,
+    type: DataTypes.DECIMAL(8,2),
     allowNull: true,
     field: 'scan_accuracy',
-    validate: {
-      min: 0
-    }
-  },
-  
-  deviceInfo: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-    field: 'device_info'
-  },
-  
-  additionalVerification: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-    field: 'additional_verification'
-  },
-  
-  failureReason: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-    field: 'failure_reason'
-  },
-  
-  responseTimeMs: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-    field: 'response_time_ms',
     validate: {
       min: 0
     }
@@ -95,6 +72,112 @@ const QRCodeScan = sequelize.define('QRCodeScan', {
     field: 'user_agent'
   },
   
+  deviceInfo: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+    field: 'device_info'
+  },
+  
+  appVersion: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'app_version'
+  },
+  
+  cameraUsed: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+    field: 'camera_used'
+  },
+  
+  scanDuration: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    field: 'scan_duration',
+    validate: {
+      min: 0
+    }
+  },
+  
+  imageQualityScore: {
+    type: DataTypes.DECIMAL(3,2),
+    allowNull: true,
+    field: 'image_quality_score',
+    validate: {
+      min: 0.0,
+      max: 1.0
+    }
+  },
+  
+  additionalVerification: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+    field: 'additional_verification'
+  },
+  
+  biometricVerification: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+    field: 'biometric_verification'
+  },
+  
+  twoFactorVerification: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+    field: 'two_factor_verification'
+  },
+  
+  failureReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'failure_reason'
+  },
+  
+  securityWarnings: {
+    type: DataTypes.ARRAY(DataTypes.TEXT),
+    allowNull: true,
+    defaultValue: [],
+    field: 'security_warnings'
+  },
+  
+  fraudIndicators: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    defaultValue: {},
+    field: 'fraud_indicators'
+  },
+  
+  riskScore: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'risk_score'
+  },
+  
+  manualOverride: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'manual_override'
+  },
+  
+  overrideReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'override_reason'
+  },
+  
+  overrideBy: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    field: 'override_by'
+  },
+  
   scannedAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -102,22 +185,10 @@ const QRCodeScan = sequelize.define('QRCodeScan', {
     field: 'scanned_at'
   },
   
-  securityFlags: {
-    type: DataTypes.JSONB,
+  processedAt: {
+    type: DataTypes.DATE,
     allowNull: true,
-    defaultValue: {},
-    field: 'security_flags'
-  },
-  
-  riskScore: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-    defaultValue: 0.0,
-    field: 'risk_score',
-    validate: {
-      min: 0.0,
-      max: 1.0
-    }
+    field: 'processed_at'
   }
 }, {
   tableName: 'qr_code_scans',

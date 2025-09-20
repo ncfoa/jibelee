@@ -29,18 +29,30 @@ CREATE TABLE notification_templates (
     name VARCHAR(255) UNIQUE NOT NULL,
     description TEXT,
     category notification_category_enum NOT NULL,
+    subcategory VARCHAR(100),
     
     -- Template content for different channels
     push_template JSONB,
     email_template JSONB,
     sms_template JSONB,
     in_app_template JSONB,
+    webhook_template JSONB,
     
     variables JSONB DEFAULT '[]', -- Array of variable definitions
     targeting JSONB DEFAULT '{}', -- Targeting conditions
+    personalization_rules JSONB DEFAULT '{}',
+    a_b_test_config JSONB,
     
     status template_status_enum NOT NULL DEFAULT 'active',
     version INTEGER DEFAULT 1,
+    language VARCHAR(10) DEFAULT 'en',
+    priority notification_priority_enum DEFAULT 'normal',
+    rate_limit INTEGER DEFAULT 0,
+    delivery_window JSONB,
+    expiry_rules JSONB,
+    retry_policy JSONB,
+    compliance_flags JSONB DEFAULT '{}',
+    analytics_config JSONB DEFAULT '{}',
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -58,28 +70,40 @@ CREATE TABLE notifications (
     
     title VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
+    rich_content JSONB,
     
     -- Channel-specific data
     push_data JSONB,
     email_data JSONB,
     sms_data JSONB,
     in_app_data JSONB,
+    webhook_data JSONB,
     
     status notification_status_enum NOT NULL DEFAULT 'sent',
     priority notification_priority_enum NOT NULL DEFAULT 'normal',
     
+    scheduled_for TIMESTAMP,
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     delivered_at TIMESTAMP,
     read_at TIMESTAMP,
     clicked_at TIMESTAMP,
+    dismissed_at TIMESTAMP,
     
     -- Tracking data
     external_id VARCHAR(255), -- Provider-specific ID (FCM, etc.)
+    provider_response JSONB,
     failure_reason TEXT,
+    retry_count INTEGER DEFAULT 0,
+    max_retries INTEGER DEFAULT 3,
+    expires_at TIMESTAMP,
     
     -- Related entities
     delivery_id UUID,
     trip_id UUID,
+    campaign_id UUID,
+    ab_test_variant VARCHAR(50),
+    personalization_data JSONB,
+    tracking_data JSONB,
     
     metadata JSONB DEFAULT '{}'
 );
@@ -93,19 +117,34 @@ CREATE TABLE notification_preferences (
     push_enabled BOOLEAN DEFAULT TRUE,
     push_categories JSONB DEFAULT '{}',
     push_quiet_hours JSONB,
+    push_device_tokens JSONB DEFAULT '[]',
     
     email_enabled BOOLEAN DEFAULT TRUE,
     email_categories JSONB DEFAULT '{}',
     email_frequency VARCHAR(20) DEFAULT 'immediate',
+    email_digest_enabled BOOLEAN DEFAULT FALSE,
+    email_unsubscribe_token VARCHAR(255) UNIQUE,
     
     sms_enabled BOOLEAN DEFAULT FALSE,
     sms_categories JSONB DEFAULT '{}',
+    sms_phone_number VARCHAR(20),
+    sms_verified BOOLEAN DEFAULT FALSE,
     
     in_app_enabled BOOLEAN DEFAULT TRUE,
     in_app_categories JSONB DEFAULT '{}',
     
+    webhook_enabled BOOLEAN DEFAULT FALSE,
+    webhook_url VARCHAR(500),
+    webhook_secret VARCHAR(255),
+    
     language VARCHAR(10) DEFAULT 'en',
     timezone VARCHAR(50) DEFAULT 'UTC',
+    marketing_enabled BOOLEAN DEFAULT FALSE,
+    promotional_enabled BOOLEAN DEFAULT FALSE,
+    research_enabled BOOLEAN DEFAULT FALSE,
+    do_not_disturb_enabled BOOLEAN DEFAULT FALSE,
+    do_not_disturb_schedule JSONB,
+    accessibility_preferences JSONB DEFAULT '{}',
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -118,13 +157,23 @@ CREATE TABLE device_tokens (
     token VARCHAR(500) NOT NULL,
     platform platform_enum NOT NULL,
     device_id VARCHAR(255),
+    device_name VARCHAR(255),
     app_version VARCHAR(20),
+    os_version VARCHAR(50),
+    device_model VARCHAR(100),
     
     active BOOLEAN DEFAULT TRUE,
+    verified BOOLEAN DEFAULT FALSE,
     last_used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    failure_count INTEGER DEFAULT 0,
+    last_failure_at TIMESTAMP,
+    failure_reason TEXT,
+    registration_source VARCHAR(50),
+    environment VARCHAR(20) DEFAULT 'production',
     
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP
 );
 
 -- 5. Bulk Notifications Table

@@ -40,10 +40,87 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       comment: 'Expected data type for validation'
     },
+    default_value: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
+    allowed_values: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
     validation_rules: {
       type: DataTypes.JSONB,
       defaultValue: {},
       comment: 'Validation rules for the configuration value'
+    },
+    is_encrypted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    environment: {
+      type: DataTypes.STRING(20),
+      defaultValue: 'production'
+    },
+    feature_flag: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    rollout_percentage: {
+      type: DataTypes.INTEGER,
+      defaultValue: 100,
+      validate: { min: 0, max: 100 }
+    },
+    target_users: {
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      defaultValue: []
+    },
+    target_regions: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    },
+    effective_from: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
+    effective_until: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    priority: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    tags: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    },
+    dependencies: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    },
+    impact_assessment: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    rollback_value: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
+    change_log: {
+      type: DataTypes.JSONB,
+      defaultValue: []
+    },
+    approval_required: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    approved_by: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
+    approved_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     },
     updated_by: {
       type: DataTypes.UUID,
@@ -54,11 +131,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSONB,
       allowNull: true,
       comment: 'Previous value before last update'
-    },
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      comment: 'Whether this configuration is currently active'
     }
   }, {
     tableName: 'system_configuration',

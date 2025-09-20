@@ -6,48 +6,63 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
 -- Create custom enums
-CREATE TYPE qr_type_enum AS ENUM ('pickup', 'delivery');
+CREATE TYPE qr_type_enum AS ENUM ('pickup', 'delivery', 'verification', 'emergency');
 CREATE TYPE security_level_enum AS ENUM ('standard', 'high', 'maximum');
 CREATE TYPE qr_status_enum AS ENUM ('active', 'used', 'expired', 'revoked');
 CREATE TYPE scan_result_enum AS ENUM ('success', 'failed', 'invalid_location', 'expired', 'already_used', 'unauthorized', 'invalid_data');
+CREATE TYPE verification_status_enum AS ENUM ('verified', 'failed', 'pending', 'bypassed');
+CREATE TYPE override_type_enum AS ENUM ('emergency', 'technical', 'customer_service', 'security');
+CREATE TYPE emergency_category_enum AS ENUM ('medical', 'theft', 'accident', 'natural_disaster', 'technical_failure', 'other');
+CREATE TYPE emergency_severity_enum AS ENUM ('low', 'medium', 'high', 'critical');
 
 -- QR Codes Table
 CREATE TABLE qr_codes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     delivery_id UUID NOT NULL,
     qr_type qr_type_enum NOT NULL,
+    code_data TEXT NOT NULL,
     encrypted_data TEXT NOT NULL,
+    hash_value VARCHAR(64) UNIQUE NOT NULL,
     image_data TEXT, -- Base64 encoded image
+    image_url VARCHAR(500),
     download_url VARCHAR(500),
-    backup_code_hash VARCHAR(255) NOT NULL, -- Hashed backup code
+    backup_code VARCHAR(50) NOT NULL,
     security_level security_level_enum NOT NULL DEFAULT 'standard',
-    
-    -- Security features
+    encryption_algorithm VARCHAR(50) DEFAULT 'AES-256',
     security_features JSONB DEFAULT '{}',
     
+    -- Image properties
+    format VARCHAR(20) DEFAULT 'PNG',
+    size VARCHAR(20) DEFAULT '256x256',
+    error_correction VARCHAR(10) DEFAULT 'M',
+    
     -- Expiration and usage
-    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    used_at TIMESTAMP WITH TIME ZONE,
+    expires_at TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
     status qr_status_enum NOT NULL DEFAULT 'active',
+    usage_count INTEGER DEFAULT 0,
+    max_usage_count INTEGER DEFAULT 1,
     
     -- Location binding (optional)
     location_bound BOOLEAN DEFAULT FALSE,
     bound_coordinates GEOGRAPHY(POINT, 4326),
     bound_radius INTEGER, -- meters
     
+    -- Time binding
+    time_bound BOOLEAN DEFAULT FALSE,
+    valid_from TIMESTAMP,
+    valid_until TIMESTAMP,
+    
+    -- Device binding
+    device_bound BOOLEAN DEFAULT FALSE,
+    bound_device_id VARCHAR(255),
+    ip_restrictions INET[],
+    
     -- Metadata
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID,
-    revoked_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    revoked_at TIMESTAMP,
     revoked_reason TEXT,
     revoked_by UUID,
-    
-    -- Additional data for complex scenarios
-    additional_data JSONB DEFAULT '{}',
-    
-    -- Version for optimistic locking
-    version INTEGER DEFAULT 1,
     
     -- Constraints
     CONSTRAINT qr_codes_delivery_type_unique UNIQUE (delivery_id, qr_type),
@@ -61,55 +76,76 @@ CREATE TABLE qr_code_scans (
     qr_code_id UUID NOT NULL REFERENCES qr_codes(id) ON DELETE CASCADE,
     scanned_by UUID NOT NULL,
     scan_result scan_result_enum NOT NULL,
+    verification_status verification_status_enum NOT NULL,
     scan_location GEOGRAPHY(POINT, 4326),
-    scan_accuracy FLOAT, -- GPS accuracy in meters
-    device_info JSONB DEFAULT '{}',
-    additional_verification JSONB DEFAULT '{}',
-    failure_reason TEXT,
-    response_time_ms INTEGER,
+    scan_accuracy DECIMAL(8,2), -- GPS accuracy in meters
     ip_address INET,
     user_agent TEXT,
-    scanned_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    device_info JSONB,
+    app_version VARCHAR(20),
+    camera_used BOOLEAN DEFAULT TRUE,
+    scan_duration INTEGER, -- milliseconds
+    image_quality_score DECIMAL(3,2),
+    additional_verification JSONB,
+    biometric_verification JSONB,
+    two_factor_verification JSONB,
+    failure_reason TEXT,
+    security_warnings TEXT[],
+    fraud_indicators JSONB,
+    risk_score INTEGER DEFAULT 0,
+    manual_override BOOLEAN DEFAULT FALSE,
+    override_reason TEXT,
+    override_by UUID,
+    scanned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP,
     
-    -- Security tracking
-    security_flags JSONB DEFAULT '{}',
-    risk_score FLOAT DEFAULT 0.0,
-    
-    -- Indexes will be added below
+    -- Constraints
     CONSTRAINT qr_scans_accuracy_positive CHECK (scan_accuracy >= 0),
-    CONSTRAINT qr_scans_response_time_positive CHECK (response_time_ms >= 0),
-    CONSTRAINT qr_scans_risk_score_range CHECK (risk_score >= 0.0 AND risk_score <= 1.0)
+    CONSTRAINT qr_scans_scan_duration_positive CHECK (scan_duration >= 0),
+    CONSTRAINT qr_scans_image_quality_range CHECK (image_quality_score >= 0.0 AND image_quality_score <= 1.0)
 );
 
 -- Emergency Overrides Table
 CREATE TABLE qr_emergency_overrides (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     delivery_id UUID NOT NULL,
-    qr_code_id UUID REFERENCES qr_codes(id) ON DELETE SET NULL,
+    qr_code_id UUID REFERENCES qr_codes(id),
+    override_type override_type_enum NOT NULL,
     override_reason TEXT NOT NULL,
-    description TEXT,
-    alternative_verification JSONB DEFAULT '{}',
+    emergency_category emergency_category_enum NOT NULL,
+    severity_level emergency_severity_enum NOT NULL,
+    alternative_verification JSONB,
     requested_by UUID NOT NULL,
     approved_by UUID,
-    alternative_code_hash VARCHAR(255) NOT NULL, -- Hashed alternative code
-    valid_until TIMESTAMP WITH TIME ZONE NOT NULL,
-    used_at TIMESTAMP WITH TIME ZONE,
+    emergency_contact VARCHAR(20),
+    location_data JSONB,
+    supporting_evidence TEXT[],
+    witness_information JSONB,
+    police_report_number VARCHAR(100),
+    insurance_claim_number VARCHAR(100),
+    alternative_code VARCHAR(50) NOT NULL,
+    code_expires_at TIMESTAMP NOT NULL,
+    valid_until TIMESTAMP NOT NULL,
+    used_at TIMESTAMP,
+    usage_location GEOGRAPHY(POINT, 4326),
     used_by UUID,
-    use_location GEOGRAPHY(POINT, 4326),
-    verification_evidence JSONB DEFAULT '{}',
+    verification_photos TEXT[],
+    admin_notes TEXT,
+    follow_up_required BOOLEAN DEFAULT FALSE,
+    audit_trail JSONB DEFAULT '[]',
     
     -- Status tracking
     status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'used', 'expired')),
-    approval_notes TEXT,
-    additional_restrictions JSONB DEFAULT '{}',
     
     -- Timestamps
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    approved_at TIMESTAMP WITH TIME ZONE,
-    rejected_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    approved_at TIMESTAMP,
+    rejected_at TIMESTAMP,
+    rejection_reason TEXT,
     
     -- Constraints
     CONSTRAINT emergency_overrides_valid_until_future CHECK (valid_until > created_at),
+    CONSTRAINT emergency_overrides_code_expires_future CHECK (code_expires_at > created_at),
     CONSTRAINT emergency_overrides_approval_logic CHECK (
         (status = 'approved' AND approved_by IS NOT NULL AND approved_at IS NOT NULL) OR
         (status != 'approved')

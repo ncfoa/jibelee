@@ -10,10 +10,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       comment: 'Reference to admin user who performed the action'
     },
+    session_id: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
     action: {
       type: DataTypes.STRING(100),
       allowNull: false,
       comment: 'Type of action performed'
+    },
+    action_category: {
+      type: DataTypes.STRING(50),
+      allowNull: false
     },
     resource_type: {
       type: DataTypes.STRING(50),
@@ -25,6 +33,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       comment: 'ID of the affected resource'
     },
+    resource_identifier: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    old_values: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
+    new_values: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
+    changes_summary: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -34,6 +58,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.JSONB,
       defaultValue: {},
       comment: 'Additional details about the action'
+    },
+    severity: {
+      type: DataTypes.ENUM('info', 'warning', 'error', 'critical'),
+      defaultValue: 'info',
+      comment: 'Severity level of the action'
+    },
+    risk_level: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    compliance_flags: {
+      type: DataTypes.JSONB,
+      defaultValue: {}
     },
     ip_address: {
       type: DataTypes.INET,
@@ -45,20 +82,70 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true,
       comment: 'User agent string'
     },
-    session_id: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      comment: 'Session identifier'
+    location_data: {
+      type: DataTypes.JSONB,
+      allowNull: true
     },
-    severity: {
-      type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
-      defaultValue: 'medium',
-      comment: 'Severity level of the action'
+    device_fingerprint: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     },
-    status: {
-      type: DataTypes.ENUM('success', 'failure', 'partial'),
-      defaultValue: 'success',
-      comment: 'Status of the action'
+    api_endpoint: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    request_method: {
+      type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    request_payload: {
+      type: DataTypes.JSONB,
+      allowNull: true
+    },
+    response_code: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    response_time_ms: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    success: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+    error_message: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    warnings: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      defaultValue: []
+    },
+    affected_users: {
+      type: DataTypes.ARRAY(DataTypes.UUID),
+      defaultValue: []
+    },
+    business_impact: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    regulatory_impact: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    approval_required: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    approved_by: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
+    approved_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'admin_activity_log',

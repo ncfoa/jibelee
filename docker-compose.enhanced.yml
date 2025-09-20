@@ -1,0 +1,84 @@
+
+version: '3.8'
+services:
+  # Enhanced Notification Service
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_NAME=notification_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-enhanced-jwt-secret
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - FCM_SERVER_KEY=your-fcm-key
+      - TWILIO_ACCOUNT_SID=your-twilio-sid
+      - TWILIO_AUTH_TOKEN=your-twilio-token
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./notification-service:/app
+      - /app/node_modules
+    networks:
+      - p2p-network
+
+  # Enhanced QR Code Service
+  qr-code-service:
+    build: ./qr-code-service
+    ports:
+      - "3006:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_NAME=qr_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET=your-enhanced-jwt-secret
+      - ENCRYPTION_KEY=your-32-char-encryption-key-here
+      - QR_CODE_BASE_URL=https://api.p2pdelivery.com/qr
+    depends_on:
+      - postgres
+    volumes:
+      - ./qr-code-service:/app
+      - /app/node_modules
+    networks:
+      - p2p-network
+
+  # Enhanced Admin Service
+  admin-service:
+    build: ./admin-service
+    ports:
+      - "3007:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_NAME=admin_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-enhanced-jwt-secret
+      - ADMIN_SECRET_KEY=your-admin-secret-key
+      - BACKUP_STORAGE_PATH=/app/backups
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./admin-service:/app
+      - /app/node_modules
+      - ./backups:/app/backups
+    networks:
+      - p2p-network
+
+networks:
+  p2p-network:
+    external: true
+
+volumes:
+  postgres-data:
+  redis-data:

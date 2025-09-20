@@ -16,28 +16,113 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'support'
     },
+    department: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
     permissions: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       defaultValue: [],
       comment: 'Additional permissions beyond role-based permissions'
     },
+    access_level: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      validate: { min: 1, max: 10 }
+    },
+    regions_managed: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    },
+    categories_managed: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: []
+    },
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true
     },
+    is_super_admin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    can_approve_overrides: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    can_access_financials: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    can_manage_users: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    can_view_analytics: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    can_export_data: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    emergency_contact: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    backup_contact: {
+      type: DataTypes.STRING(20),
+      allowNull: true
+    },
+    security_clearance: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
     last_login_at: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    last_activity_at: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    failed_login_attempts: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    account_locked_until: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    password_expires_at: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    two_factor_required: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+    ip_whitelist: {
+      type: DataTypes.ARRAY(DataTypes.INET),
+      defaultValue: []
+    },
+    session_timeout_minutes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 60
     },
     created_by: {
       type: DataTypes.UUID,
       allowNull: true,
       comment: 'Admin who created this admin user'
     },
-    metadata: {
-      type: DataTypes.JSONB,
-      defaultValue: {},
-      comment: 'Additional admin-specific metadata'
+    deactivated_at: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    deactivated_by: {
+      type: DataTypes.UUID,
+      allowNull: true
     }
   }, {
     tableName: 'admin_users',

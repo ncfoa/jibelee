@@ -15,9 +15,15 @@ const QRCode = sequelize.define('QRCode', {
   },
   
   qrType: {
-    type: DataTypes.ENUM('pickup', 'delivery'),
+    type: DataTypes.ENUM('pickup', 'delivery', 'verification', 'emergency'),
     allowNull: false,
     field: 'qr_type'
+  },
+  
+  codeData: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    field: 'code_data'
   },
   
   encryptedData: {
@@ -26,10 +32,23 @@ const QRCode = sequelize.define('QRCode', {
     field: 'encrypted_data'
   },
   
+  hashValue: {
+    type: DataTypes.STRING(64),
+    allowNull: false,
+    unique: true,
+    field: 'hash_value'
+  },
+  
   imageData: {
     type: DataTypes.TEXT,
     allowNull: true,
     field: 'image_data'
+  },
+  
+  imageUrl: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    field: 'image_url'
   },
   
   downloadUrl: {
@@ -38,10 +57,10 @@ const QRCode = sequelize.define('QRCode', {
     field: 'download_url'
   },
   
-  backupCodeHash: {
-    type: DataTypes.STRING(255),
+  backupCode: {
+    type: DataTypes.STRING(50),
     allowNull: false,
-    field: 'backup_code_hash'
+    field: 'backup_code'
   },
   
   securityLevel: {
@@ -51,11 +70,37 @@ const QRCode = sequelize.define('QRCode', {
     field: 'security_level'
   },
   
+  encryptionAlgorithm: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    defaultValue: 'AES-256',
+    field: 'encryption_algorithm'
+  },
+  
   securityFeatures: {
     type: DataTypes.JSONB,
     allowNull: true,
     defaultValue: {},
     field: 'security_features'
+  },
+  
+  format: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'PNG'
+  },
+  
+  size: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: '256x256'
+  },
+  
+  errorCorrection: {
+    type: DataTypes.STRING(10),
+    allowNull: false,
+    defaultValue: 'M',
+    field: 'error_correction'
   },
   
   expiresAt: {
@@ -74,6 +119,20 @@ const QRCode = sequelize.define('QRCode', {
     type: DataTypes.ENUM('active', 'used', 'expired', 'revoked'),
     allowNull: false,
     defaultValue: 'active'
+  },
+  
+  usageCount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+    field: 'usage_count'
+  },
+  
+  maxUsageCount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1,
+    field: 'max_usage_count'
   },
   
   locationBound: {
@@ -98,10 +157,43 @@ const QRCode = sequelize.define('QRCode', {
     }
   },
   
-  createdBy: {
-    type: DataTypes.UUID,
+  timeBound: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'time_bound'
+  },
+  
+  validFrom: {
+    type: DataTypes.DATE,
     allowNull: true,
-    field: 'created_by'
+    field: 'valid_from'
+  },
+  
+  validUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    field: 'valid_until'
+  },
+  
+  deviceBound: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'device_bound'
+  },
+  
+  boundDeviceId: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    field: 'bound_device_id'
+  },
+  
+  ipRestrictions: {
+    type: DataTypes.ARRAY(DataTypes.INET),
+    allowNull: true,
+    defaultValue: [],
+    field: 'ip_restrictions'
   },
   
   revokedAt: {
@@ -120,19 +212,6 @@ const QRCode = sequelize.define('QRCode', {
     type: DataTypes.UUID,
     allowNull: true,
     field: 'revoked_by'
-  },
-  
-  additionalData: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-    field: 'additional_data'
-  },
-  
-  version: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 1
   }
 }, {
   tableName: 'qr_codes',

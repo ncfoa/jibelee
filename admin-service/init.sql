@@ -69,8 +69,22 @@ EXCEPTION
 END $$;
 
 DO $$ BEGIN
+    -- Backup scope enum
+    CREATE TYPE backup_scope_enum AS ENUM ('system', 'database', 'files', 'logs', 'configuration');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
     -- Backup status enum
     CREATE TYPE backup_status_enum AS ENUM ('in_progress', 'completed', 'failed', 'expired');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    -- Activity severity enum
+    CREATE TYPE activity_severity_enum AS ENUM ('info', 'warning', 'error', 'critical');
 EXCEPTION
     WHEN duplicate_object THEN null;
 END $$;

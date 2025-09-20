@@ -25,15 +25,28 @@ const EmergencyOverride = sequelize.define('EmergencyOverride', {
     onDelete: 'SET NULL'
   },
   
+  overrideType: {
+    type: DataTypes.ENUM('emergency', 'technical', 'customer_service', 'security'),
+    allowNull: false,
+    field: 'override_type'
+  },
+  
   overrideReason: {
     type: DataTypes.TEXT,
     allowNull: false,
     field: 'override_reason'
   },
   
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: true
+  emergencyCategory: {
+    type: DataTypes.ENUM('medical', 'theft', 'accident', 'natural_disaster', 'technical_failure', 'other'),
+    allowNull: false,
+    field: 'emergency_category'
+  },
+  
+  severityLevel: {
+    type: DataTypes.ENUM('low', 'medium', 'high', 'critical'),
+    allowNull: false,
+    field: 'severity_level'
   },
   
   alternativeVerification: {
@@ -55,10 +68,53 @@ const EmergencyOverride = sequelize.define('EmergencyOverride', {
     field: 'approved_by'
   },
   
-  alternativeCodeHash: {
-    type: DataTypes.STRING(255),
+  emergencyContact: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    field: 'emergency_contact'
+  },
+  
+  locationData: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    field: 'location_data'
+  },
+  
+  supportingEvidence: {
+    type: DataTypes.ARRAY(DataTypes.TEXT),
+    allowNull: true,
+    defaultValue: [],
+    field: 'supporting_evidence'
+  },
+  
+  witnessInformation: {
+    type: DataTypes.JSONB,
+    allowNull: true,
+    field: 'witness_information'
+  },
+  
+  policeReportNumber: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'police_report_number'
+  },
+  
+  insuranceClaimNumber: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    field: 'insurance_claim_number'
+  },
+  
+  alternativeCode: {
+    type: DataTypes.STRING(50),
     allowNull: false,
-    field: 'alternative_code_hash'
+    field: 'alternative_code'
+  },
+  
+  codeExpiresAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    field: 'code_expires_at'
   },
   
   validUntil: {
@@ -79,36 +135,43 @@ const EmergencyOverride = sequelize.define('EmergencyOverride', {
     field: 'used_by'
   },
   
-  useLocation: {
+  usageLocation: {
     type: DataTypes.GEOGRAPHY('POINT', 4326),
     allowNull: true,
-    field: 'use_location'
+    field: 'usage_location'
   },
   
-  verificationEvidence: {
-    type: DataTypes.JSONB,
+  verificationPhotos: {
+    type: DataTypes.ARRAY(DataTypes.TEXT),
     allowNull: true,
-    defaultValue: {},
-    field: 'verification_evidence'
+    defaultValue: [],
+    field: 'verification_photos'
+  },
+  
+  adminNotes: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'admin_notes'
+  },
+  
+  followUpRequired: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+    field: 'follow_up_required'
+  },
+  
+  auditTrail: {
+    type: DataTypes.JSONB,
+    allowNull: false,
+    defaultValue: [],
+    field: 'audit_trail'
   },
   
   status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected', 'used', 'expired'),
     allowNull: false,
     defaultValue: 'pending'
-  },
-  
-  approvalNotes: {
-    type: DataTypes.TEXT,
-    allowNull: true,
-    field: 'approval_notes'
-  },
-  
-  additionalRestrictions: {
-    type: DataTypes.JSONB,
-    allowNull: true,
-    defaultValue: {},
-    field: 'additional_restrictions'
   },
   
   approvedAt: {
@@ -121,6 +184,12 @@ const EmergencyOverride = sequelize.define('EmergencyOverride', {
     type: DataTypes.DATE,
     allowNull: true,
     field: 'rejected_at'
+  },
+  
+  rejectionReason: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    field: 'rejection_reason'
   }
 }, {
   tableName: 'qr_emergency_overrides',
