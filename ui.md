@@ -18,6 +18,47 @@ This document explains every page and interactive element (buttons, inputs, sele
 
 ---
 
+## Design Language – Uber x Amazon, powered by Adobe Spectrum
+
+- **Visual identity**
+  - High-contrast, legible, performance-first like Uber; information-dense and commerce-clear like Amazon; refined surfaces and accessible tokens from Adobe Spectrum.
+  - **Typography**: Spectrum type scale (Source Sans/Adobe Clean equivalent). Headings bold, body regular; large numeric for prices/ETAs.
+  - **Color**: Spectrum semantic tokens (positive, notice, negative, info) with a restrained accent (primary CTA). Dark and light themes supported.
+  - **Elevation**: Subtle shadows for interactive cards, dividers for section hierarchy. Avoid heavy borders; use surface contrast.
+- **Layout**
+  - 12-column grid, 1280–1440px content max width on desktop. 16/24px spacing step system. Sticky topbar and context footers.
+  - Left filter rail pattern for browse pages (Amazon), map-first hero for logistics moments (Uber).
+- **Controls**
+  - Pill-shaped search and primary CTA in hero areas; standard Spectrum shapes elsewhere. Large tap targets (min 44px).
+  - Clear primary/secondary/tertiary button hierarchy; destructive outlined in red semantic.
+- **Motion**
+  - 150–200ms ease-out for affordances; 250–300ms for modal/dialog. Use micro-interactions for confirmations, no blocking loaders.
+- **Iconography**
+  - Simple, geometric icon set; consistent stroke weight. Use StatusLight and inline icons for feedback.
+- **Accessibility**
+  - WCAG 2.1 AA, focus rings, high-contrast mode, full keyboard flows, screen-reader labels everywhere.
+
+### Spectrum Component Mapping
+
+| Purpose | Spectrum Component |
+|---|---|
+| Primary CTA | Button (variant: emphasized) |
+| Secondary action | Button (default) |
+| Destructive | Button (negative) |
+| Text input | TextField |
+| Search with suggestions | ComboBox |
+| Select | Picker |
+| Multi-select chips | TagGroup |
+| Tabs | Tabs |
+| Date/Time | DatePicker, TimeField, DateRangePicker |
+| Table/List | Table, ListView |
+| Modal | Dialog |
+| Toast/Banner | Toast, InlineAlert, StatusLight |
+| Stepper | Stepper |
+| Pagination | Pagination |
+
+---
+
 ## Landing (First Page) – Public
 
 - **Hero section (primary CTA)**
@@ -53,6 +94,12 @@ This document explains every page and interactive element (buttons, inputs, sele
 - **Mobile**: Sticky `Start` button, inputs in stacked cards; hero map hidden until results to minimize CLS.
 - **Desktop**: Side-by-side inputs with large Start button; results preview to the right of hero.
 
+### Style specifics
+- **Hero**: Full-bleed dark map with soft gradient overlay; center-aligned inputs in a high-contrast card.
+- **Inputs**: Pill-shaped `Drop-off` primary, compact `Pickup`, discrete `When` and `Weight`; icons inside fields.
+- **CTA**: Large emphasized `Start` button (Spectrum emphasized) with progress affordance on submit.
+- **Trust row**: Compact badges/icons aligned like Amazon’s proof bar.
+
 ---
 
 ## Role-Aware Home (Logged In)
@@ -71,6 +118,17 @@ This document explains every page and interactive element (buttons, inputs, sele
 
 ### Hybrid Users
 - **Role toggle**: Customer | Traveler tabs; persists preference; surfaces relevant KPIs and actions per tab.
+
+---
+
+## Navigation & Flow Patterns
+- **Persistent topbar** with global search and quick actions.
+- **Context tabs** within sections (e.g., Offers, Timeline, Documents).
+- **Breadcrumbs** on admin and deep detail pages.
+- **Sticky footers** for long forms with `Cancel` and `Save/Continue`.
+- **Forward links** at end of flows (e.g., after creating a request → `Browse traveler matches`).
+- **Back to list** buttons consistently placed top-left in details.
+- **Inline steppers** for wizards with clear step names and saved progress.
 
 ---
 
