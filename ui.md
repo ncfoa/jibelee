@@ -18,6 +18,117 @@ This document explains every page and interactive element (buttons, inputs, sele
 
 ---
 
+## Landing (First Page) – Public
+
+- **Hero section (primary CTA)**
+  - **Drop-off address input (prominent)**: Typeahead with geocoding, supports paste and recent addresses. Required.
+  - **Pickup input (optional)**: Defaults to current location; includes `Use my location` button with permission prompt and fallback.
+  - **When picker**: Date/time with presets (As soon as possible, Today, Tomorrow), timezone-aware.
+  - **Item weight select**: Common presets + custom entry (kg/lb switch).
+  - **Start button**: Runs instant quote + match preview; scrolls to Results section. Keyboard Enter triggers Start.
+- **Microcopy/tagline**: “Smart, secure, real people deliveries along existing routes.”
+- **Secondary CTAs**
+  - **Send a delivery**: Deep-links to Create Delivery Request wizard prefilled from hero inputs.
+  - **I’m traveling**: Deep-links to Create Trip wizard with origin/destination autofilled (if provided).
+- **Results preview (below hero)**
+  - Shows top traveler matches on map + list (limited) based on hero input; `View all` button navigates to full results/browse.
+- **How it works**
+  - 1) Post details → 2) Get matched → 3) QR-verified handoff → 4) Escrow-protected payout. Each step clickable to learn more.
+- **Trust & proof**
+  - Real-time counters (deliveries completed, on-time rate), verification badges explanation, platform safety highlights.
+- **Trending routes carousel**
+  - Chips (e.g., NYC → Boston); clicking fills hero inputs.
+- **Testimonials strip**
+  - Short quotes with ratings; `See more` opens modal.
+- **SEO footer content**
+  - City/route links; minimal to keep page fast.
+
+### Landing Page Behavior
+- **Typeahead**: Debounced geocoding, keyboard navigation, clear button, recent history chips.
+- **Validation**: Requires drop-off before Start; highlights missing fields with inline hints.
+- **Performance**: Prefetch search assets after first keystroke; lazy-load map.
+- **Accessibility**: Proper labels, describedby for help text, skip to results link.
+
+### Responsiveness
+- **Mobile**: Sticky `Start` button, inputs in stacked cards; hero map hidden until results to minimize CLS.
+- **Desktop**: Side-by-side inputs with large Start button; results preview to the right of hero.
+
+---
+
+## Role-Aware Home (Logged In)
+
+### Customer Home (Logged In)
+- **Hero quick quote**: Prefills with default pickup (home address) and last used drop-off; `Get matches` button.
+- **Primary actions**: `Create request`, `Track delivery`, `Browse travelers`.
+- **My activity**: Cards for Open requests, Offers pending, Active deliveries (with quick `View QR`).
+- **Recommendations**: Suggested travelers/routes based on history.
+
+### Traveler Home (Logged In)
+- **Hero quick publish**: Origin/Destination inputs with `Create trip` CTA; `Monetize your trip` microcopy.
+- **Primary actions**: `Create trip`, `Incoming requests`, `My templates`.
+- **Capacity & schedule**: Upcoming trips list with utilization mini-bars.
+- **Recommendations**: Popular routes, demand heatmap snippet.
+
+### Hybrid Users
+- **Role toggle**: Customer | Traveler tabs; persists preference; surfaces relevant KPIs and actions per tab.
+
+---
+
+## First-Run Experience (New Users)
+- **Onboarding checklist** (progress banner): Add address, Verify email/phone, Complete profile, ID verification, Set notifications.
+- **Contextual nudges**: Inline tips near actions (e.g., “Verify ID to raise limits”).
+- **Skippable tour**: 3–5 step guided highlights with `Next`, `Skip`, `Done`.
+
+---
+
+## Sitemap
+
+- **Public**
+  - Landing (First Page)
+  - Login, Register, Verify Email, Forgot/Reset Password
+  - Legal: Terms, Privacy; System Status
+- **Shared (Authenticated)**
+  - Role-aware Home/Dashboard
+  - Profile, Verification, Settings, Privacy & Location
+  - Notifications, Messaging/Inbox
+  - Wallet & Payments (Customer), Payouts (Traveler)
+  - Help/Support
+- **Customer**
+  - Delivery Requests List
+  - Create Delivery Request (wizard)
+  - Request Details (Offers, Timeline, Documents)
+  - Offer Comparison
+  - Payment/Checkout (Escrow)
+  - Delivery Tracking (Map, QR Codes, Timeline)
+  - Reviews/Rating
+- **Traveler**
+  - Trips List
+  - Create Trip (wizard)
+  - Trip Details (Capacity, Weather, Offers, Templates, Analytics)
+  - Live Trip (Tracking, QR Scan)
+  - Trip Templates (My, Public, Popular)
+  - Payouts
+  - Traveler Analytics
+- **Location & Routing**
+  - Live Tracking
+  - Geofences
+  - Route Optimization
+- **QR Verification**
+  - QR Codes (Generate/Display)
+  - QR Scan
+- **Admin**
+  - Admin Login
+  - Dashboard
+  - Users, Verifications, Disputes
+  - Financials
+  - System Config
+  - Analytics
+  - Backups & Maintenance
+- **Error & Maintenance**
+  - 403/404/500 pages; Maintenance window page
+
+---
+
 ## Authentication & Onboarding
 
 ### Sign Up Page
